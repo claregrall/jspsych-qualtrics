@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="/Users/f004ycz/Documents/jspsych-6.3.1/jspsych.js"></script>
+    <!-- <script src="/Users/f004ycz/Documents/jspsych-6.3.1/plugins/jspsych-audio-slider-response.js"></script> -->
+    <script src="/Users/f004ycz/Documents/jspsych-6.3.1/plugins/jspsych-audio-slider-response-edit.js"></script>
+
+    <script src="/Users/f004ycz/Documents/jspsych-6.3.1/plugins/jspsych-html-button-response.js"></script>
+
+    <link href="/Users/f004ycz/Documents/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css" />
+
+
+<script>
+   var pre_audio = {
+     type: 'html-button-response',
+     stimulus: '<p>The experiment is starting in <span id="clock">1:00</span>. Please open in full screen and close all other tabs. This experiment is expected to take less than 30 minutes',
+     choices: ['Continue'],
+     on_load: function(){
+       var wait_time = 1000; // in milliseconds
+       var start_time = performance.now();
+       document.querySelector('button').disabled = true;
+       var interval = setInterval(function(){
+         var time_left = wait_time - (performance.now() - start_time);
+         var minutes = Math.floor(time_left / 1000 / 60);
+         var seconds = Math.floor((time_left - minutes*1000*60)/1000);
+         var seconds_str = seconds.toString().padStart(2,'0');
+         document.querySelector('#clock').innerHTML = minutes + ':' + seconds_str
+         if(time_left <= 0){
+           document.querySelector('#clock').innerHTML = "0:00";
+           document.querySelector('button').disabled = false;
+           clearInterval(interval);
+         }
+       }, 250)
+     }
+   }
+
+  var trial_1 = {
+    //type: 'audio-slider-response',
+    type: 'audio-slider-response-edit',
+    require_movement: true,
+    trial_ends_after_audio: true,
+    stimulus: '/Users/f004ycz/Documents/sound/short-audio-sample.mp3',
+    labels: ['Negative', 'Positive'],
+    slider_width: 500,
+    prompt: '<p><font size="+3">What is your impression of Lucy?</font> <br> Please continuously rate your impression from negative to positive.<br> <br> <font size="-1">The story will play for <span id="clock">1:00</span> more minutes </font> </p>',
+    on_load: function(){
+      var wait_time = 120000; // in milliseconds
+      var start_time = performance.now();
+      // document.querySelector('button').disabled = true;
+      var interval = setInterval(function(){
+        var time_left = wait_time - (performance.now() - start_time);
+        var minutes = Math.floor(time_left / 1000 / 60);
+        var seconds = Math.floor((time_left - minutes*1000*60)/1000);
+        var seconds_str = seconds.toString().padStart(2,'0');
+        document.querySelector('#clock').innerHTML = minutes + ':' + seconds_str
+        if(time_left <= 0){
+          document.querySelector('#clock').innerHTML = "0:00";
+          // document.querySelector('button').disabled = false;
+          clearInterval(interval);
+        }
+      }, 250)
+    }
+  }
+
+  
+
+  jsPsych.init({
+    timeline: [pre_audio, trial_1],
+    use_webaudio: false,
+
+    on_finish: function() {
+      jsPsych.data.displayData();
+      //jsPsych.data.get().filter({trial_type: ‘audio-slider-response’}).localSave(‘csv’,‘res.csv’);
+    },
+    default_iti: 250
+  });
+
+</script>
+
+
+</head>
+  <body></body>
